@@ -1,0 +1,69 @@
+Nume: Savu Ioana Rusalda
+Grupă: 343C3
+
+# Tema <2>  REST API & Docker   
+
+Organizare
+	Tema presupune urmatoarele fisiere:
+		*Dockerfile - fisier de creare imagine de Docker pentru server(api)
+		*requerments.txt - fisier cu tooluri necesare in server 
+                                (Flask, mysql.connector)
+		*wait-for-it.sh - script pentru dependinte intre continere
+		*docker-compose.yml - fisier creare continer
+		*createDB.sql - fisier creare baza de date
+		*.dockerignore
+        *main.py - cod sursa API
+
+Implementare
+    In rezolvarea temei am folosit limbajul Python impreuna cu framework-ul
+Flask si sistemul de gestiune al bazelor de date Mysql. Pentru a prelucra
+cererile sql in limbajul Python am folosit mysql-connector-python.
+    La adaugarea de temperaturi am introdus un sleep de 1 secunda pentru a
+genera timestampuri diferite in baza de date.
+    Pentru crearea imaginii de docker specifica server-ului am scris
+un Dockerfile in care am folosit imagine de python la care am adaugat Flask si
+mysql-connector. Tot in acest fisier am setat ca folder principal /src si
+am copiat scriptul wait-for-it.sh.
+    In vederea rularii serverului am folosit comanda:
+        "./wait-for-it.sh mysqldb:3306 --timeout=0 --python main.py"
+    Cu ajutorul scriptului se asteapta initializarea bazei de date.
+    
+    Docker-compose:
+        *retele: frontend si backend
+        *volume: folosit pentru copierea fisierului createDB.sql
+        *server-api: mapeaza portul 6000 de pe local host 
+pe portul 5000 al continer-ului. Ruleaza cu ajutorul fisierului Dockerfile.
+Asteapta initializarea bazei de date. Ruleaza in reteaua "frontend".
+        *baza de date: mapeaza portu-ul 3307 al host-ului cu 3306 al
+continer-ului. Ruleaza cu ajutorul imaginii de docker "mysql"
+        *utilitar: mysql-workbench care mapeaza portul 3000 al
+host-ului la portul 3000 al continer-ului
+
+Compilare & Rulare
+    docker-compose up --build
+
+Ierarhie fisiere:
+.
+├── Dockerfile
+├── README
+├── database
+│   └── createDB.sql
+├── docker-compose.yml
+├── env-variables.env
+├── requirements.txt
+├── src
+│   └── main.py
+└── wait-for-it.sh
+2 directories, 8 files
+
+Bibliografie
+	*Laboratoare SPRC 2021
+    *https://docs.docker.com/engine/reference/builder/
+    *https://towardsdatascience.com/how-to-run-mysql-using-docker-ed4cebcd90e4
+    *https://docs.docker.com/compose
+    *https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
+    *https://www.w3schools.com/sql/default.asp
+    *https://www.w3schools.com/python/python_mysql_getstarted.asp
+    *https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+    *https://github.com/linuxserver/docker-mysql-workbench/pkgs/container/mysql-workbench
+

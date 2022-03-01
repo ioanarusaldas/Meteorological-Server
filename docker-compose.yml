@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  app-server:
+    depends_on:
+      - mysqldb
+    container_name: app_server
+    build: .
+    ports:
+      - 6000:5000
+    networks:
+      - frontend
+    env_file:
+      - env-variables.env
+    
+  mysqldb:
+    container_name: mysqldb
+    image: mysql
+    ports:
+      - 3307:3306
+    networks:
+      - backend
+      - frontend
+    volumes:
+      - ./database/createDB.sql:/docker-entrypoint-initdb.d/createDB.sql
+    environment: 
+      - MYSQL_ROOT_PASSWORD=root
+    env_file:
+      - env-variables.env
+      
+  mysql-workbench:
+    depends_on:
+      - mysqldb
+    image: lscr.io/linuxserver/mysql-workbench
+    container_name: mysql-workbench
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    networks:
+      - backend
+    ports:
+      - 3000:3000
+    cap_add:
+      - IPC_LOCK
+    restart: unless-stopped
+networks:
+  frontend:
+    name: frontend
+  backend:
+    name: backend
